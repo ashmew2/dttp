@@ -3,16 +3,11 @@
 #include <vector>
 using namespace std;
 
-// Return: True or False denoting success or failure.
-bool handle_register(void);
-bool handle_unregister(void);
-
-// Return: Number of seeds served.
-int serve_seeds(void);
-
 class HostSeedMap {
   vector<string> seed_list;
   string host_name;
+  string seed_secret;
+  string host_secret;
   
 public:
   HostSeedMap(string new_host, int capacity = 5) {
@@ -48,6 +43,7 @@ public:
 // TODO: Map Hostname with a hash or set for O(1) lookups with seeds
 class Tracker {
   vector<HostSeedMap> host_list;
+  // TODO: Do we need the tracker to know itself? Like a tracker ID? 
 
   Tracker() {
     host_list.reserve(5);
@@ -79,6 +75,7 @@ class Tracker {
       if(host_list[i].get_host_name() == ghost)
 	return host_list[i].list_of_seeds();
   }
+
   // TODO: We should return the host ID so that caller can keep it
   void register_new_host(string new_hostname, vector<string> new_seeds) {
     HostSeedMap *new_host_seed_map = new HostSeedMap(new_hostname, new_seeds.size());
@@ -97,5 +94,9 @@ class Tracker {
 	break;
       }
   }
+
+  bool verify_seed_secret(string hostname, string secret) {
+    // TODO: Fix this stub. This always returns true!
+    return true;
+  }
 };
-  
