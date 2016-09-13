@@ -35,5 +35,11 @@ main(int argc, char *argv[]) {
   if(connect(client_fd, (struct sockaddr *)&server, sizeof(server)) < 0)
     exit(-1);
 
+  if(send(client_fd, "client_ask", 10, 0) != 10) {
+    cout<<"Client ask failed :("<<endl;
+    exit(-1);
+  }
+
   cout<<"Client bye"<<endl;
+  exit(0);
 }

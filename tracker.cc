@@ -132,7 +132,6 @@ int main(int argc, char *argv[]) {
   if(bind(server_fd, (struct sockaddr *) &server_socket, sizeof(server_socket)) < 0)
     exit(-1);
 
-
   int MAXPENDING = 5;
 
   cout<<"Listening..."<<endl;
@@ -143,16 +142,19 @@ int main(int argc, char *argv[]) {
   struct sockaddr_in client_socket;
   int client_fd;
   unsigned int client_length;
-
+  char buffer[200];
+  
   while(1) {
     cout<<"Waiting for a client to connect..."<<endl;
 
     client_fd = accept(server_fd, (struct sockaddr *)&client_socket, &client_length);
 
-    if(client_fd<0)
+    if(client_fd < 0)
       exit(-2);
 
-    //handle_connection(client_fd);
-    cout<<inet_ntoa(client_socket.sin_addr)<<" accepted!"<<endl;
+    // handle_connection(client_fd);
+    cout<<inet_ntoa(client_socket.sin_addr)<<":"<<ntohs(client_socket.sin_port)<<" accepted!"<<endl;
+    recv(client_fd, buffer, 199, 0);
+    cout<<buffer<<endl;
   }
 }
