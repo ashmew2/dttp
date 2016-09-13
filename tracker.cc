@@ -1,6 +1,13 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
 using namespace std;
 
 class HostSeedMap {
@@ -100,3 +107,52 @@ class Tracker {
     return true;
   }
 };
+
+int main(int argc, char *argv[]) {
+  /* TODO: Add CLI options to bind to a port and specific interface later.
+     For now, just bind to localhost on port 40k
+  */
+
+  cout<<"Creating Tracker..."<<endl;
+  string ip = "127.0.0.1"; // localhost
+  int port = 40000; // 40k
+  
+  struct sockaddr_in server_socket;
+
+  // Create the socket and check it's validity
+  int server_fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if(server_fd < 0)
+    exit(server_fd);
+
+  memset(&server_socket, 0, sizeof(server_socket));
+  server_socket.sin_family = AF_INET;
+  server_socket.sin_addr.s_addr = htonl(INADDR_ANY);
+  server_socket.sin_port = htons(port);
+
+  if(bind(server_fd, (struct sockaddr *) &server_socket, sizeof(server_socket)) < 0)
+    exit(-1);
+
+
+  int MAXPENDING = 5;
+
+  cout<<"Listening..."<<endl;
+
+  if (listen(server_fd, MAXPENDING) < 0)
+    exit(-1);
+
+  struct sockaddr_in client_socket;
+  int client_fd;
+  unsigned int client_length;
+
+  while(1) {
+    cout<<"Waiting for a client to connect..."<<endl;
+
+    client_fd = accept(server_fd, (struct sockaddr *)&client_socket, &client_length);
+
+    if(client_fd<0)
+      exit(-2);
+
+    //handle_connection(client_fd);
+    cout<<inet_ntoa(client_socket.sin_addr)<<" accepted!"<<endl;
+  }
+}
